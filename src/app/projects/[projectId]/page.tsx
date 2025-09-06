@@ -12,28 +12,26 @@ import { api } from "../../../../convex/_generated/api"
 import { useUser } from "@clerk/nextjs"
 import { use } from "react"
 
-interface ProjectDetailPageProps {
-  params: Promise<{ projectId: Id<"projects"> }>
-}
 
-export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
+
+const Page = ({ params }: { params: Promise<{ projectId: Id<"projects"> }> }) => {
   const { user } = useUser()
   const router = useRouter()
-  const { projectId } = use(params)
+  const { projectId  } = use(params)
   const project = useQuery(
     api.projects.getProjectById,
-    { projectId: projectId || "jn746k2kapj2cwhhhjax4545b17q2awm" as Id<"projects"> }
+    { projectId: projectId }
   )
   const members = useQuery(
     api.projects.getProjectMembers,
-    { projectId: projectId || "jn746k2kapj2cwhhhjax4545b17q2awm" as Id<"projects"> }
+    { projectId: projectId  }
   )
   const tasks = useQuery(
     api.tasks.getProjectTasks,
-    { projectId: projectId || "jn746k2kapj2cwhhhjax4545b17q2awm" as Id<"projects"> }
+    { projectId: projectId  }
   )
 
-  if (project === undefined || members === undefined || tasks === undefined) {
+  if (!project || !members || !tasks) {
     return (
       <div className="min-h-screen bg-background p-8">
         <div className="max-w-4xl mx-auto">
@@ -186,3 +184,5 @@ export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
     </div>
   )
 }
+
+export default Page;

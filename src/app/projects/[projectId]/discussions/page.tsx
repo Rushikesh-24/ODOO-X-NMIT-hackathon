@@ -2,31 +2,28 @@
 
 import { useQuery } from "convex/react"
 import { useRouter } from "next/navigation"
-import { KanbanBoard } from "@/components/tasks/kanban-board"
+import { CommentList } from "@/components/comments/comment-list"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft } from "lucide-react"
 import { api } from "../../../../../convex/_generated/api"
 import { Id } from "../../../../../convex/_generated/dataModel"
+import { use } from "react"
 
-interface TasksPageProps {
-  params: { id: string }
-}
 
-export default function TasksPage({ params }: TasksPageProps) {
+export default function DiscussionsPage({ params }: { params: Promise<{ projectId: Id<"projects"> }> }) {
   const router = useRouter()
-  const projectId = params.id as Id<"projects">
+  const { projectId  } = use(params)
 
   const project = useQuery(api.projects.getProjectById, { projectId })
 
   if (project === undefined) {
     return (
       <div className="min-h-screen bg-background p-8">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-4xl mx-auto">
           <div className="h-8 bg-muted animate-pulse rounded mb-8" />
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[...Array(3)].map((_, i) => (
-              <div key={i} className="h-96 bg-muted animate-pulse rounded-lg" />
-            ))}
+          <div className="space-y-6">
+            <div className="h-48 bg-muted animate-pulse rounded-lg" />
+            <div className="h-32 bg-muted animate-pulse rounded-lg" />
           </div>
         </div>
       </div>
@@ -46,7 +43,7 @@ export default function TasksPage({ params }: TasksPageProps) {
 
   return (
     <div className="min-h-screen bg-background p-8">
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-4xl mx-auto">
         <div className="flex items-center space-x-4 mb-8">
           <Button variant="ghost" size="sm" onClick={() => router.push(`/projects/${projectId}`)}>
             <ArrowLeft className="w-4 h-4 mr-2" />
@@ -54,11 +51,11 @@ export default function TasksPage({ params }: TasksPageProps) {
           </Button>
           <div>
             <h1 className="text-3xl font-bold">{project.name}</h1>
-            <p className="text-muted-foreground">Task Management</p>
+            <p className="text-muted-foreground">Team Discussions</p>
           </div>
         </div>
 
-        <KanbanBoard projectId={projectId} />
+        <CommentList projectId={projectId} title="Project Discussion" />
       </div>
     </div>
   )
