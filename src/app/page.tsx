@@ -1,9 +1,8 @@
 "use client";
 
-import { useAuth } from "@/lib/auth";
+// import { useAuth } from "@/lib/auth";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-import { useQuery } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ProjectCard } from "@/components/projects/project-card";
@@ -11,20 +10,35 @@ import { NotificationBell } from "@/components/notifications/notification-bell";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Plus, FolderOpen, CheckSquare, MessageSquare } from "lucide-react";
 import { api } from "../../convex/_generated/api";
+import { SignOutButton, useUser } from "@clerk/nextjs";
+import { useEffect } from "react";
 
 export default function HomePage() {
-  const { isAuthenticated, user, logout, isLoading } = useAuth()
+  // const { isAuthenticated, user, logout, isLoading } = useAuth()
+  const { user ,isLoaded , isSignedIn} = useUser()
   const router = useRouter()
 
-  const projects = useQuery(api.projects.getUserProjects, user ? { userId: user.userId } : "skip")
+  const createUser = useMutation(api.users.createuser);
+  const checkUser = useQuery(api.users.getUserById, { clerkId: user?.id || "" });
 
   useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      router.push("/auth")
+    if (!isSignedIn || !user || checkUser === undefined) return;
+    if (!checkUser) {
+      console.log("Creating new user:", user.id);
+      createUser({
+        clerkId: user.id,
+        userName: user.username || "",
+        email: user.emailAddresses[0].emailAddress,
+        name: user.fullName || "",
+        imageUrl: user.imageUrl || "",
+      });
     }
-  }, [isAuthenticated, isLoading, router])
+  }, [isSignedIn, user, checkUser, createUser]);
 
-  if (isLoading) {
+  const projects = useQuery(api.projects.getUserProjects, user ? { userId: user.id } : "skip")
+
+
+  if (!isLoaded) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
@@ -35,9 +49,6 @@ export default function HomePage() {
     )
   }
 
-  if (!isAuthenticated) {
-    return null
-  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -58,16 +69,14 @@ export default function HomePage() {
               >
                 <Avatar className="w-6 h-6">
                   <AvatarFallback className="text-xs">
-                    {user?.name?.charAt(0) || user?.userName?.charAt(0) || "?"}
+                    {user?.fullName?.charAt(0) || user?.firstName?.charAt(0) || "?"}
                   </AvatarFallback>
                 </Avatar>
                 <span className="hidden md:inline">
-                  {user?.name || user?.userName}
+                  {user?.fullName || user?.firstName}
                 </span>
               </Button>
-              <Button onClick={logout} variant="outline" size="sm">
-                Logout
-              </Button>
+              <SignOutButton/>
             </div>
           </div>
         </div>
@@ -77,7 +86,7 @@ export default function HomePage() {
       <main className="max-w-6xl mx-auto p-8">
         <div className="mb-8">
           <h2 className="text-xl font-semibold mb-2">
-            Welcome back, {user?.name || user?.userName}!
+            Welcome back, {user?.fullName || user?.firstName}!
           </h2>
           <p className="text-muted-foreground">
             Here&apos;s what&apos;s happening with your projects today.

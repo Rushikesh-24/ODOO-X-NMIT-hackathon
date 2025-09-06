@@ -4,7 +4,6 @@ import React from "react"
 
 import { useState } from "react"
 import { useQuery, useMutation } from "convex/react"
-import { useAuth } from "@/lib/auth"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -19,6 +18,7 @@ import { Calendar, User, Clock, MessageSquare } from "lucide-react"
 import { api } from "../../../convex/_generated/api"
 import { Id } from "../../../convex/_generated/dataModel"
 import toast from "react-hot-toast"
+import { useUser } from "@clerk/nextjs"
 
 interface TaskDetailDialogProps {
   taskId: Id<"tasks"> | null
@@ -39,7 +39,7 @@ export function TaskDetailDialog({ taskId, projectId, open, onOpenChange }: Task
   const task = useQuery(api.tasks.getTaskById, taskId ? { taskId } : "skip")
   const members = useQuery(api.projects.getProjectMembers, { projectId })
   const updateTask = useMutation(api.tasks.updateTask)
-  const { user } = useAuth()
+  const { user } = useUser()
 
   // Update form when task loads
   React.useEffect(() => {
@@ -52,7 +52,7 @@ export function TaskDetailDialog({ taskId, projectId, open, onOpenChange }: Task
     }
   }, [task])
 
-  const assignee = members?.find((m) => m?.userId === task?.assigneeId)
+  const assignee = members?.find((m) => m?.clerkId === task?.assigneeId)
   const isOverdue = task?.dueDate && task.dueDate < Date.now() && task.status !== "done"
 
   const handleSave = async () => {
@@ -181,7 +181,7 @@ export function TaskDetailDialog({ taskId, projectId, open, onOpenChange }: Task
                       <SelectContent>
                         <SelectItem value="unassigned">Unassigned</SelectItem>
                         {members?.map((member) => (
-                          <SelectItem key={member?.userId} value={member?.userId || ""}>
+                          <SelectItem key={member?.clerkId} value={member?.clerkId || ""}>
                             {member?.name || member?.userName}
                           </SelectItem>
                         ))}

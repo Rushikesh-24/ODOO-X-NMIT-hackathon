@@ -1,21 +1,15 @@
 "use client"
-
-import { useAuth } from "@/lib/auth"
 import { useRouter } from "next/navigation"
 import { ProfileForm } from "@/components/profile/profile-form"
 import { ProfileStats } from "@/components/profile/profile-stats"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { ArrowLeft, Settings, Bell, Shield } from "lucide-react"
+import { SignOutButton, useUser } from "@clerk/nextjs"
 
 export default function ProfilePage() {
-  const { user, logout } = useAuth()
+  const { isSignedIn } = useUser()
   const router = useRouter()
-
-  if (!user) {
-    router.push("/auth")
-    return null
-  }
 
   return (
     <div className="min-h-screen bg-background p-8">
@@ -118,9 +112,7 @@ export default function ProfilePage() {
                   <CardDescription>Irreversible and destructive actions.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <Button variant="destructive" onClick={logout}>
-                    Sign Out
-                  </Button>
+                  <SignOutButton/>
                 </CardContent>
               </Card>
             </div>

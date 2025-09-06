@@ -4,7 +4,6 @@ import type React from "react"
 
 import { useState } from "react"
 import { useMutation, useQuery } from "convex/react"
-import { useAuth } from "@/lib/auth"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -22,6 +21,7 @@ import { Plus } from "lucide-react"
 import { Id } from "../../../convex/_generated/dataModel"
 import { api } from "../../../convex/_generated/api"
 import toast from "react-hot-toast"
+import { useUser } from "@clerk/nextjs"
 
 interface CreateTaskDialogProps {
   projectId: Id<"projects">
@@ -37,7 +37,7 @@ export function CreateTaskDialog({ projectId }: CreateTaskDialogProps) {
 
   const createTask = useMutation(api.tasks.createTask)
   const members = useQuery(api.projects.getProjectMembers, { projectId })
-  const { user } = useAuth()
+  const { user } = useUser()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -51,7 +51,7 @@ export function CreateTaskDialog({ projectId }: CreateTaskDialogProps) {
         projectId,
         assigneeId: assigneeId === "unassigned" ? undefined : assigneeId,
         dueDate: dueDate ? new Date(dueDate).getTime() : undefined,
-        createdBy: user.userId,
+        createdBy: user.id,
       })
 
       toast.success(`${title} has been added to the project.`)
@@ -112,7 +112,7 @@ export function CreateTaskDialog({ projectId }: CreateTaskDialogProps) {
                 <SelectContent>
                   <SelectItem value="unassigned">Unassigned</SelectItem>
                   {members?.map((member) => (
-                    <SelectItem key={member?.userId} value={member?.userId || ""}>
+                    <SelectItem key={member?.clerkId} value={member?.clerkId || ""}>
                       {member?.name || member?.userName}
                     </SelectItem>
                   ))}

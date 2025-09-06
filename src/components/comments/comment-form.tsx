@@ -4,7 +4,6 @@ import type React from "react"
 
 import { useState } from "react"
 import { useMutation } from "convex/react"
-import { useAuth } from "@/lib/auth"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent } from "@/components/ui/card"
@@ -13,6 +12,7 @@ import { toast } from 'react-hot-toast';
 import { Send } from "lucide-react"
 import { api } from "../../../convex/_generated/api"
 import { Id } from "../../../convex/_generated/dataModel"
+import { useUser } from "@clerk/nextjs"
 
 interface CommentFormProps {
   projectId: Id<"projects">
@@ -25,8 +25,7 @@ export function CommentForm({ projectId, taskId, placeholder = "Write a comment.
   const [isLoading, setIsLoading] = useState(false)
 
   const createComment = useMutation(api.comments.createComment)
-  const { user } = useAuth()
-
+  const { user } = useUser()
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!user || !content.trim()) return
@@ -35,7 +34,7 @@ export function CommentForm({ projectId, taskId, placeholder = "Write a comment.
     try {
       await createComment({
         content: content.trim(),
-        authorId: user.userId,
+        authorId: user.id,
         projectId,
         taskId,
       })
@@ -58,7 +57,7 @@ export function CommentForm({ projectId, taskId, placeholder = "Write a comment.
           <div className="flex space-x-3">
             <Avatar className="w-8 h-8">
               <AvatarFallback className="text-sm">
-                {user.name?.charAt(0) || user.userName?.charAt(0) || "?"}
+                {user.firstName?.charAt(0) || user.fullName?.charAt(0) || "?"}
               </AvatarFallback>
             </Avatar>
             <div className="flex-1">

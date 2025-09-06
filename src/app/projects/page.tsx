@@ -1,23 +1,19 @@
 "use client"
 
 import { useQuery } from "convex/react"
-import { useAuth } from "@/lib/auth"
 import { useRouter } from "next/navigation"
 import { CreateProjectDialog } from "@/components/projects/create-project-dialog"
 import { ProjectCard } from "@/components/projects/project-card"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft } from "lucide-react"
 import { api } from "../../../convex/_generated/api"
+import { useUser } from "@clerk/nextjs"
 
 export default function ProjectsPage() {
-  const { user } = useAuth()
+  const { user } = useUser()
   const router = useRouter()
-  const projects = useQuery(api.projects.getUserProjects, user ? { userId: user.userId } : "skip")
+  const projects = useQuery(api.projects.getUserProjects, user ? { userId: user.id } : "skip")
 
-  if (!user) {
-    router.push("/auth")
-    return null
-  }
 
   return (
     <div className="min-h-screen bg-background p-8">

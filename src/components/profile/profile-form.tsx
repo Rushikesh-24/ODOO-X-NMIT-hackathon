@@ -4,7 +4,6 @@ import type React from "react"
 
 import { useState } from "react"
 import { useMutation } from "convex/react"
-import { useAuth } from "@/lib/auth"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -13,11 +12,12 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { toast } from 'react-hot-toast';
 import { User, Mail, AtSign } from "lucide-react"
 import { api } from "../../../convex/_generated/api"
+import { useUser } from "@clerk/nextjs"
 
 export function ProfileForm() {
-  const { user, login } = useAuth()
-  const [name, setName] = useState(user?.name || "")
-  const [userName, setUserName] = useState(user?.userName || "")
+  const { user } = useUser()
+  const [name, setName] = useState(user?.fullName || "")
+  const [userName, setUserName] = useState(user?.username || "")
   const [isLoading, setIsLoading] = useState(false)
 
   const updateProfile = useMutation(api.users.updateUserProfile)
@@ -30,7 +30,7 @@ export function ProfileForm() {
 
     try {
       const updatedUser = await updateProfile({
-        userId: user.userId,
+        userId: user.id,
         name: name.trim() || undefined,
         userName: userName.trim(),
       })
@@ -56,12 +56,12 @@ export function ProfileForm() {
           <div className="flex items-center space-x-4">
             <Avatar className="w-16 h-16">
               <AvatarFallback className="text-lg">
-                {name?.charAt(0) || userName?.charAt(0) || user.email?.charAt(0) || "?"}
+                {name?.charAt(0) || userName?.charAt(0) || user.primaryEmailAddress?.emailAddress || "?"}
               </AvatarFallback>
             </Avatar>
             <div>
               <p className="font-medium">{name || userName || "No name set"}</p>
-              <p className="text-sm text-muted-foreground">{user.email}</p>
+              <p className="text-sm text-muted-foreground">{user.primaryEmailAddress?.emailAddress}</p>
             </div>
           </div>
 
@@ -100,7 +100,7 @@ export function ProfileForm() {
             <Label htmlFor="email">Email Address</Label>
             <div className="relative">
               <Mail className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
-              <Input id="email" value={user.email} disabled className="pl-10 bg-muted" />
+              <Input id="email" value={user.primaryEmailAddress?.emailAddress} disabled className="pl-10 bg-muted" />
             </div>
             <p className="text-xs text-muted-foreground">
               Email cannot be changed. Contact support if you need to update your email.

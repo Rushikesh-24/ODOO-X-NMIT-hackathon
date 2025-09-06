@@ -4,7 +4,6 @@ import type React from "react"
 
 import { useState } from "react"
 import { useMutation } from "convex/react"
-import { useAuth } from "@/lib/auth"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -20,6 +19,7 @@ import { toast } from 'react-hot-toast';
 import { UserPlus } from "lucide-react"
 import { api } from "../../../convex/_generated/api"
 import { Id } from "../../../convex/_generated/dataModel"
+import { useUser } from "@clerk/nextjs"
 
 interface AddMemberDialogProps {
   projectId: Id<"projects">
@@ -31,7 +31,7 @@ export function AddMemberDialog({ projectId }: AddMemberDialogProps) {
   const [isLoading, setIsLoading] = useState(false)
 
   const addMember = useMutation(api.projects.addProjectMember)
-  const { user } = useAuth()
+  const { user } = useUser()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -42,7 +42,7 @@ export function AddMemberDialog({ projectId }: AddMemberDialogProps) {
       const newMember = await addMember({
         projectId,
         userEmail: email,
-        addedBy: user.userId,
+        addedBy: user.id,
       })
 
       toast.success(`${newMember.name || newMember.userName} has been added to the project.`)

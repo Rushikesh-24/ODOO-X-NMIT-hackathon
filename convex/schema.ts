@@ -3,17 +3,17 @@ import { v } from "convex/values"
 
 const schema = defineSchema({
   users: defineTable({
-    userId: v.string(),
-    userName: v.string(),
+    clerkId: v.string(),
     email: v.string(),
-    password: v.string(),
+    userName: v.string(),
     name: v.optional(v.string()),
-    authToken: v.optional(v.string()),
+    imageUrl: v.optional(v.string()),
     createdAt: v.number(),
+    updatedAt: v.number(),
   })
     .index("by_email", ["email"])
-    .index("by_userId", ["userId"])
-    .index("by_authToken", ["authToken"]),
+    .index("by_clerkId", ["clerkId"]),
+    
   projects: defineTable({
   name: v.string(),
   description: v.optional(v.string()),

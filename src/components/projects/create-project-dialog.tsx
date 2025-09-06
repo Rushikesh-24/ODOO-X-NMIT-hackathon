@@ -4,7 +4,6 @@ import type React from "react"
 
 import { useState } from "react"
 import { useMutation } from "convex/react"
-import { useAuth } from "@/lib/auth"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -20,6 +19,7 @@ import {
 import { Plus } from "lucide-react"
 import { api } from "../../../convex/_generated/api"
 import toast from "react-hot-toast"
+import { useUser } from "@clerk/nextjs"
 
 export function CreateProjectDialog() {
   const [open, setOpen] = useState(false)
@@ -28,7 +28,7 @@ export function CreateProjectDialog() {
   const [isLoading, setIsLoading] = useState(false)
 
   const createProject = useMutation(api.projects.createProject)
-  const { user } = useAuth()
+  const { user } = useUser()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -39,7 +39,7 @@ export function CreateProjectDialog() {
       await createProject({
         name,
         description,
-        ownerId: user.userId,
+        ownerId: user.id,
       })
 
       toast.success("Project created successfully!")

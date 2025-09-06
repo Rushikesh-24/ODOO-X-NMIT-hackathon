@@ -3,7 +3,6 @@
 
 import { useState } from "react"
 import { useQuery, useMutation } from "convex/react"
-import { useAuth } from "@/lib/auth"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -18,13 +17,14 @@ import {
 import { Bell, Check, X } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { api } from "../../../convex/_generated/api"
+import { useUser } from "@clerk/nextjs"
 
 export function NotificationBell() {
-  const { user } = useAuth()
+  const { user } = useUser()
   const [open, setOpen] = useState(false)
 
-  const notifications = useQuery(api.notifications.getUserNotifications, user ? { userId: user.userId } : "skip")
-  const unreadCount = useQuery(api.notifications.getUnreadNotificationCount, user ? { userId: user.userId } : "skip")
+  const notifications = useQuery(api.notifications.getUserNotifications, user ? { userId: user.id } : "skip")
+  const unreadCount = useQuery(api.notifications.getUnreadNotificationCount, user ? { userId: user.id } : "skip")
 
   const markAsRead = useMutation(api.notifications.markNotificationAsRead)
   const markAllAsRead = useMutation(api.notifications.markAllNotificationsAsRead)
@@ -42,7 +42,7 @@ export function NotificationBell() {
 
   const handleMarkAllAsRead = async () => {
     try {
-      await markAllAsRead({ userId: user.userId })
+      await markAllAsRead({ userId: user.id })
     } catch (error) {
       console.error("Failed to mark all notifications as read:", error)
     }

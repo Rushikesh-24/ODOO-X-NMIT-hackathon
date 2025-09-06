@@ -89,18 +89,18 @@ export const addProjectMember = mutation({
     }
 
     // Check if user is already a member
-    if (project.memberIds.includes(user.userId)) {
+    if (project.memberIds.includes(user.clerkId)) {
       throw new Error("User is already a member of this project")
     }
 
     // Add user to project
     await ctx.db.patch(args.projectId, {
-      memberIds: [...project.memberIds, user.userId],
+      memberIds: [...project.memberIds, user.clerkId],
     })
 
     // Create notification for new member
     await ctx.db.insert("notifications", {
-      userId: user.userId,
+      userId: user.clerkId,
       type: "project_invitation",
       message: `You were added to project "${project.name}"`,
       read: false,
@@ -120,10 +120,10 @@ export const getProjectMembers = query({
     if (!project) return []
 
     const members = await Promise.all(
-      project.memberIds.map(async (userId) => {
+      project.memberIds.map(async (clerkId) => {
         return await ctx.db
           .query("users")
-          .filter((q) => q.eq(q.field("userId"), userId))
+          .filter((q) => q.eq(q.field("clerkId"), clerkId))
           .first()
       }),
     )

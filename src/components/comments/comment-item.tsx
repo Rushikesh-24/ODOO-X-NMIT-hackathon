@@ -2,7 +2,6 @@
 
 import { useState } from "react"
 import { useMutation, useQuery } from "convex/react"
-import { useAuth } from "@/lib/auth"
 import { Card, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -12,6 +11,7 @@ import { MoreHorizontal, Edit, Trash2, Save, X } from "lucide-react"
 import { api } from "../../../convex/_generated/api"
 import { Id } from "../../../convex/_generated/dataModel"
 import { toast } from 'react-hot-toast';
+import { useUser } from "@clerk/nextjs"
 
 interface CommentItemProps {
   comment: {
@@ -32,10 +32,10 @@ export function CommentItem({ comment }: CommentItemProps) {
   const updateComment = useMutation(api.comments.updateComment)
   const deleteComment = useMutation(api.comments.deleteComment)
   const members = useQuery(api.projects.getProjectMembers, { projectId: comment.projectId })
-  const { user } = useAuth()
+  const { user } = useUser()
 
-  const author = members?.find((m) => m?.userId === comment.authorId)
-  const isAuthor = user?.userId === comment.authorId
+  const author = members?.find((m) => m?.clerkId === comment.authorId)
+  const isAuthor = user?.id === comment.authorId
 
   const handleEdit = async () => {
     if (!user || !editContent.trim()) return
@@ -45,7 +45,7 @@ export function CommentItem({ comment }: CommentItemProps) {
       await updateComment({
         commentId: comment._id,
         content: editContent.trim(),
-        userId: user.userId,
+        userId: user.id,
       })
 
       setIsEditing(false)
@@ -64,7 +64,7 @@ export function CommentItem({ comment }: CommentItemProps) {
     try {
       await deleteComment({
         commentId: comment._id,
-        userId: user.userId,
+        userId: user.id,
       })
 
       toast.success("Comment deleted!")

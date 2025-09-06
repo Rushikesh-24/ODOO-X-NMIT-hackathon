@@ -1,7 +1,6 @@
 "use client"
 
 import { useQuery } from "convex/react"
-import { useAuth } from "@/lib/auth"
 import { useRouter } from "next/navigation"
 import { KanbanBoard } from "@/components/tasks/kanban-board"
 import { Button } from "@/components/ui/button"
@@ -14,16 +13,10 @@ interface TasksPageProps {
 }
 
 export default function TasksPage({ params }: TasksPageProps) {
-  const { user } = useAuth()
   const router = useRouter()
   const projectId = params.id as Id<"projects">
 
   const project = useQuery(api.projects.getProjectById, { projectId })
-
-  if (!user) {
-    router.push("/auth")
-    return null
-  }
 
   if (project === undefined) {
     return (

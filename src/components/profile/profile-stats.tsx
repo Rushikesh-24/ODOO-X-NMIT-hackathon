@@ -1,14 +1,14 @@
 "use client"
 
 import { useQuery } from "convex/react"
-import { useAuth } from "@/lib/auth"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { FolderOpen, CheckSquare, MessageSquare, TrendingUp } from "lucide-react"
 import { api } from "../../../convex/_generated/api"
+import { useUser } from "@clerk/nextjs"
 
 export function ProfileStats() {
-  const { user } = useAuth()
-  const stats = useQuery(api.users.getUserStats, user ? { userId: user.userId } : "skip")
+  const { user } = useUser()
+  const stats = useQuery(api.users.getUserStats, user ? { userId: user.id } : "skip")
 
   if (!user || stats === undefined) {
     return (

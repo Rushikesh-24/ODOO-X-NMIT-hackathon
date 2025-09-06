@@ -42,7 +42,7 @@ export function ProjectCard({ project, onClick }: ProjectCardProps) {
             <Users className="w-4 h-4 text-muted-foreground" />
             <div className="flex -space-x-2">
               {members?.slice(0, 3).map((member, index) => (
-                <Avatar key={member?.userId || index} className="w-6 h-6 border-2 border-background">
+                <Avatar key={member?.clerkId || index} className="w-6 h-6 border-2 border-background">
                   <AvatarFallback className="text-xs">
                     {member?.name?.charAt(0) || member?.userName?.charAt(0) || "?"}
                   </AvatarFallback>

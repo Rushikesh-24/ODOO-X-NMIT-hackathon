@@ -36,7 +36,7 @@ export function TaskCard({ task, projectId, onEdit }: TaskCardProps) {
   const members = useQuery(api.projects.getProjectMembers, { projectId })
   const comments = useQuery(api.comments.getTaskComments, { taskId: task._id })
 
-  const assignee = members?.find((m) => m?.userId === task.assigneeId)
+  const assignee = members?.find((m) => m?.clerkId === task.assigneeId)
   const isOverdue = task.dueDate && task.dueDate < Date.now() && task.status !== "done"
   const commentCount = comments?.length || 0
 

@@ -1,6 +1,5 @@
 'use client'
 import { useQuery } from "convex/react"
-import { useAuth } from "@/lib/auth"
 import { useRouter } from "next/navigation"
 import { AddMemberDialog } from "@/components/projects/add-member-dialog"
 import { Button } from "@/components/ui/button"
@@ -10,23 +9,29 @@ import { Badge } from "@/components/ui/badge"
 import { ArrowLeft, Users, Calendar, Settings, CheckSquare, MessageSquare, FileText } from "lucide-react"
 import { Id } from "../../../../convex/_generated/dataModel"
 import { api } from "../../../../convex/_generated/api"
+import { useUser } from "@clerk/nextjs"
+import { use } from "react"
 
 interface ProjectDetailPageProps {
-  params: { id: Id<"projects"> }
+  params: Promise<{ projectId: Id<"projects"> }>
 }
 
 export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
-  const { user } = useAuth()
+  const { user } = useUser()
   const router = useRouter()
-  const projectId = params.id || "jn742e9ts445v45h5b451zqcmd7q35fe" as Id<"projects">
-  const project = useQuery(api.projects.getProjectById, { projectId })
-  const members = useQuery(api.projects.getProjectMembers, { projectId })
-  const tasks = useQuery(api.tasks.getProjectTasks, { projectId })
-
-  if (!user) {
-    router.push("/auth")
-    return null
-  }
+  const { projectId } = use(params)
+  const project = useQuery(
+    api.projects.getProjectById,
+    { projectId: projectId || "jn746k2kapj2cwhhhjax4545b17q2awm" as Id<"projects"> }
+  )
+  const members = useQuery(
+    api.projects.getProjectMembers,
+    { projectId: projectId || "jn746k2kapj2cwhhhjax4545b17q2awm" as Id<"projects"> }
+  )
+  const tasks = useQuery(
+    api.tasks.getProjectTasks,
+    { projectId: projectId || "jn746k2kapj2cwhhhjax4545b17q2awm" as Id<"projects"> }
+  )
 
   if (project === undefined || members === undefined || tasks === undefined) {
     return (
@@ -53,7 +58,7 @@ export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
     )
   }
 
-  const isOwner = project.ownerId === user.userId
+  const isOwner = project.ownerId === user?.id
   const completedTasks = tasks.filter((task) => task.status === "done").length
   const totalTasks = tasks.length
 
@@ -93,7 +98,7 @@ export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
             <CardContent>
               <div className="space-y-3">
                 {members.map((member) => (
-                  <div key={member?.userId} className="flex items-center space-x-3">
+                  <div key={member?.clerkId} className="flex items-center space-x-3">
                     <Avatar>
                       <AvatarFallback>{member?.name?.charAt(0) || member?.userName?.charAt(0) || "?"}</AvatarFallback>
                     </Avatar>
@@ -101,7 +106,7 @@ export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
                       <p className="font-medium">{member?.name || member?.userName}</p>
                       <p className="text-sm text-muted-foreground">{member?.email}</p>
                     </div>
-                    {member?.userId === project.ownerId && <Badge variant="outline">Owner</Badge>}
+                    {member?.clerkId === project.ownerId && <Badge variant="outline">Owner</Badge>}
                   </div>
                 ))}
               </div>
@@ -122,7 +127,7 @@ export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
               </div>
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Owner</p>
-                <p>{members.find((m) => m?.userId === project.ownerId)?.name || "Unknown"}</p>
+                <p>{members.find((m) => m?.clerkId === project.ownerId)?.name || "Unknown"}</p>
               </div>
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Members</p>
