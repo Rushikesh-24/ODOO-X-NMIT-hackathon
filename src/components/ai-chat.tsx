@@ -82,8 +82,8 @@ export default function AIChat() {
   }
 
   return (
-    <div className="h-screen bg-white text-black flex items-center justify-center p-4">
-      <div className="w-full max-w-4xl h-[700px] bg-white border border-black rounded-lg flex flex-col">
+    <div className="h-screen bg-white text-black flex items-center justify-center ">
+      <div className="w-full h-[700px] bg-white border border-black rounded-lg flex flex-col">
         {/* Header */}
         <div className="border-b border-black p-4">
           <h1 className="flex items-center gap-3 text-xl font-bold">
