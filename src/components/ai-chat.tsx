@@ -159,7 +159,7 @@ export default function AIChat() {
               onKeyPress={handleKeyPress}
               placeholder="Ask me about your projects and tasks..."
               disabled={isLoading}
-              className="flex-1 bg-white border border-white rounded-lg px-4 py-3 text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent disabled:opacity-50"
+              className="flex-1 bg-white border border-black rounded-lg px-4 py-3 text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent disabled:opacity-50"
             />
             <button
               onClick={handleSend}
