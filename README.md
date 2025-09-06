@@ -2,6 +2,8 @@
 
 ## 📖 Overview
 
+###Link: https://odoo-x-nmit-hackathon.vercel.app/sign-in?redirect_url=https://odoo-x-nmit-hackathon.vercel.app/
+
 **SynergySphere** is an advanced, AI-powered collaboration platform designed to help teams operate at their very best.  
 Unlike traditional project management tools, SynergySphere acts as a **central nervous system** for collaboration —  
 keeping teams organized, aligned, and moving forward without friction.
