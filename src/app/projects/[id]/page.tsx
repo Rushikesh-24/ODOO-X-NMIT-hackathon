@@ -11,16 +11,16 @@ import { Badge } from "@/components/ui/badge"
 import { ArrowLeft, Users, Calendar, Settings, CheckSquare, MessageSquare, FileText } from "lucide-react"
 import { Id } from "../../../../convex/_generated/dataModel"
 import { api } from "../../../../convex/_generated/api"
+import { use } from "react"
 
 interface ProjectDetailPageProps {
-  params: { id: string }
+  params: Promise<{ projectId: Id<"projects"> }>
 }
 
 export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
   const { user } = useAuth()
   const router = useRouter()
-  const projectId = params.id as Id<"projects">
-
+  const { projectId } = use(params)
   const project = useQuery(api.projects.getProjectById, { projectId })
   const members = useQuery(api.projects.getProjectMembers, { projectId })
   const tasks = useQuery(api.tasks.getProjectTasks, { projectId })
