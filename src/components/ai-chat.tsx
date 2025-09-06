@@ -1,13 +1,6 @@
 "use client"
 
-import type React from "react"
-
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import React, { useState } from "react"
 import { Send, Bot, User, Loader2 } from "lucide-react"
 import { useUser } from "@clerk/nextjs"
 
@@ -18,13 +11,12 @@ interface Message {
   timestamp: Date
 }
 
-export function AIChat() {
+export default function AIChat() {
   const { user } = useUser()
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "1",
-      content:
-        "Hi! I'm your AI assistant. I can help you with information about your projects and tasks. What would you like to know?",
+      content: "Hi! I'm your AI assistant. I can help you with information about your projects and tasks. What would you like to know?",
       sender: "assistant",
       timestamp: new Date(),
     },
@@ -90,77 +82,95 @@ export function AIChat() {
   }
 
   return (
-    <Card className="h-[600px] flex flex-col">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Bot className="h-5 w-5" />
-          AI Assistant
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="flex-1 flex flex-col gap-4">
-        <ScrollArea className="flex-1 pr-4">
-          <div className="space-y-4">
+    <div className="h-screen bg-white text-black flex items-center justify-center p-4">
+      <div className="w-full max-w-4xl h-[700px] bg-white border border-black rounded-lg flex flex-col">
+        {/* Header */}
+        <div className="border-b border-black p-4">
+          <h1 className="flex items-center gap-3 text-xl font-bold">
+            <div className="w-8 h-8 border border-black rounded-full flex items-center justify-center">
+              <Bot className="h-5 w-5" />
+            </div>
+            AI Assistant
+          </h1>
+        </div>
+
+        {/* Messages Area */}
+        <div className="flex-1 overflow-y-auto p-4">
+          <div className="space-y-6">
             {messages.map((message) => (
               <div
                 key={message.id}
-                className={`flex gap-3 ${message.sender === "user" ? "justify-end" : "justify-start"}`}
+                className={`flex gap-4 ${message.sender === "user" ? "justify-end" : "justify-start"}`}
               >
                 {message.sender === "assistant" && (
-                  <Avatar className="h-8 w-8">
-                    <AvatarFallback>
-                      <Bot className="h-4 w-4" />
-                    </AvatarFallback>
-                  </Avatar>
+                  <div className="w-10 h-10 border border-black rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                    <Bot className="h-5 w-5" />
+                  </div>
                 )}
-                <div
-                  className={`max-w-[80%] rounded-lg px-3 py-2 ${
-                    message.sender === "user" ? "bg-primary text-primary-foreground" : "bg-muted"
-                  }`}
-                >
-                  <div className="whitespace-pre-wrap text-sm">{message.content}</div>
-                  <div className="text-xs opacity-70 mt-1">
+                
+                <div className={`max-w-[70%] ${message.sender === "user" ? "order-1" : ""}`}>
+                  <div
+                    className={`rounded-lg px-4 py-3 ${
+                      message.sender === "user"
+                        ? "bg-black text-white"
+                        : "border border-black"
+                    }`}
+                  >
+                    <div className="whitespace-pre-wrap text-sm leading-relaxed">
+                      {message.content}
+                    </div>
+                  </div>
+                  <div className="text-xs text-gray-400 mt-2 px-1">
                     {message.timestamp.toLocaleTimeString([], {
                       hour: "2-digit",
                       minute: "2-digit",
                     })}
                   </div>
                 </div>
+
                 {message.sender === "user" && (
-                  <Avatar className="h-8 w-8">
-                    <AvatarFallback>
-                      <User className="h-4 w-4" />
-                    </AvatarFallback>
-                  </Avatar>
+                  <div className="w-10 h-10 border border-white rounded-full flex items-center justify-center flex-shrink-0 mt-1 order-2">
+                    <User className="h-5 w-5" />
+                  </div>
                 )}
               </div>
             ))}
+            
             {isLoading && (
-              <div className="flex gap-3 justify-start">
-                <Avatar className="h-8 w-8">
-                  <AvatarFallback>
-                    <Bot className="h-4 w-4" />
-                  </AvatarFallback>
-                </Avatar>
-                <div className="bg-muted rounded-lg px-3 py-2">
-                  <Loader2 className="h-4 w-4 animate-spin" />
+              <div className="flex gap-4 justify-start">
+                <div className="w-10 h-10 border border-white rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                  <Bot className="h-5 w-5" />
+                </div>
+                <div className="border border-white rounded-lg px-4 py-3">
+                  <Loader2 className="h-5 w-5 animate-spin" />
                 </div>
               </div>
             )}
           </div>
-        </ScrollArea>
-        <div className="flex gap-2">
-          <Input
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder="Ask me about your projects and tasks..."
-            disabled={isLoading}
-          />
-          <Button onClick={handleSend} disabled={isLoading || !input.trim()}>
-            <Send className="h-4 w-4" />
-          </Button>
         </div>
-      </CardContent>
-    </Card>
+
+        {/* Input Area */}
+        <div className="border-t border-white p-4">
+          <div className="flex gap-3">
+            <input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyPress={handleKeyPress}
+              placeholder="Ask me about your projects and tasks..."
+              disabled={isLoading}
+              className="flex-1 bg-white border border-white rounded-lg px-4 py-3 text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent disabled:opacity-50"
+            />
+            <button
+              onClick={handleSend}
+              disabled={isLoading || !input.trim()}
+              className="bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center min-w-[60px]"
+            >
+              <Send className="h-5 w-5" />
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   )
 }

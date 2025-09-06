@@ -1,4 +1,4 @@
-import { AIChat } from "@/components/ai-chat"
+import  AIChat  from "@/components/ai-chat"
 export default function AIAssistantPage() {
   return (
       <div className="container mx-auto p-6">
