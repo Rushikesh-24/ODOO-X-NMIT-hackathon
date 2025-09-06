@@ -121,3 +121,29 @@ export const getTaskById = query({
     return await ctx.db.get(args.taskId)
   },
 })
+
+export const getUserTasks = query({
+  args: {
+    userId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const tasks = await ctx.db
+      .query("tasks")
+      .withIndex("by_assignee", (q) => q.eq("assigneeId", args.userId))
+      .order("desc")
+      .collect()
+
+    // Get project information for each task
+    const tasksWithProjects = await Promise.all(
+      tasks.map(async (task) => {
+        const project = await ctx.db.get(task.projectId)
+        return {
+          ...task,
+          project: project ? { _id: project._id, name: project.name } : null,
+        }
+      }),
+    )
+
+    return tasksWithProjects
+  },
+})
