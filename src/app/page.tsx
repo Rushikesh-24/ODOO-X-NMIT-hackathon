@@ -13,25 +13,30 @@ import { Plus, FolderOpen, CheckSquare, MessageSquare } from "lucide-react";
 import { api } from "../../convex/_generated/api";
 
 export default function HomePage() {
-  const router = useRouter();
-  const { user, logout } = useAuth();
-  const projects = useQuery(api.projects.getUserProjects, {
-    userId: user!.userId,
-  });
-  const isAuthenticated = !!user;
+  const { isAuthenticated, user, logout, isLoading } = useAuth()
+  const router = useRouter()
+
+  const projects = useQuery(api.projects.getUserProjects, user ? { userId: user.userId } : "skip")
 
   useEffect(() => {
-    if (user === null) {
-      router.push("/auth");
+    if (!isLoading && !isAuthenticated) {
+      router.push("/auth")
     }
-  }, [user, router]);
+  }, [isAuthenticated, isLoading, router])
 
-  if (!user) {
-    return null; // or spinner
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    )
   }
 
   if (!isAuthenticated) {
-    return null;
+    return null
   }
 
   return (

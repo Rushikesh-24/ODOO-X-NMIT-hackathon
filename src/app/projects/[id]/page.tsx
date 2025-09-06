@@ -1,5 +1,4 @@
-"use client"
-
+'use client'
 import { useQuery } from "convex/react"
 import { useAuth } from "@/lib/auth"
 import { useRouter } from "next/navigation"
@@ -11,16 +10,15 @@ import { Badge } from "@/components/ui/badge"
 import { ArrowLeft, Users, Calendar, Settings, CheckSquare, MessageSquare, FileText } from "lucide-react"
 import { Id } from "../../../../convex/_generated/dataModel"
 import { api } from "../../../../convex/_generated/api"
-import { use } from "react"
 
 interface ProjectDetailPageProps {
-  params: Promise<{ projectId: Id<"projects"> }>
+  params: { id: Id<"projects"> }
 }
 
 export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
   const { user } = useAuth()
   const router = useRouter()
-  const { projectId } = use(params)
+  const projectId = params.id || "jn742e9ts445v45h5b451zqcmd7q35fe" as Id<"projects">
   const project = useQuery(api.projects.getProjectById, { projectId })
   const members = useQuery(api.projects.getProjectMembers, { projectId })
   const tasks = useQuery(api.tasks.getProjectTasks, { projectId })

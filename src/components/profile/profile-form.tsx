@@ -34,14 +34,6 @@ export function ProfileForm() {
         name: name.trim() || undefined,
         userName: userName.trim(),
       })
-
-      // Update local auth state
-      login({
-        ...user,
-        name: updatedUser?.name || user.name,
-        userName: updatedUser?.userName || user.userName,
-      })
-
       toast.success("Profile updated successfully!")
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Failed to update profile")

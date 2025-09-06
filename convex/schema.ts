@@ -8,9 +8,12 @@ const schema = defineSchema({
     email: v.string(),
     password: v.string(),
     name: v.optional(v.string()),
-    profileImageUrl: v.optional(v.string()),
+    authToken: v.optional(v.string()),
     createdAt: v.number(),
-  }),
+  })
+    .index("by_email", ["email"])
+    .index("by_userId", ["userId"])
+    .index("by_authToken", ["authToken"]),
   projects: defineTable({
   name: v.string(),
   description: v.optional(v.string()),

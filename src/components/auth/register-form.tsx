@@ -22,16 +22,14 @@ export function RegisterForm({ onToggleMode }: RegisterFormProps) {
   const [name, setName] = useState("")
   const [isLoading, setIsLoading] = useState(false)
 
-  const register = useMutation(api.auth.register)
-  const { login: setAuthUser } = useAuth()
+  const { register } = useAuth()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
 
     try {
-      const user = await register({ email, password, userName, name })
-      setAuthUser(user)
+      await register(email, password, userName, name)
       toast.success("Account created successfully!")
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "An error occurred")
