@@ -46,10 +46,7 @@ export default function TasksPage({ params }: { params: Promise<{ projectId: Id<
     <div className="min-h-screen bg-background p-8">
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center space-x-4 mb-8">
-          <Button variant="ghost" size="sm" onClick={() => router.push(`/projects/${projectId}`)}>
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Project
-          </Button>
+          
           <div>
             <h1 className="text-3xl font-bold">{project.name}</h1>
             <p className="text-muted-foreground">Task Management</p>

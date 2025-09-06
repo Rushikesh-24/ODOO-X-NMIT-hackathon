@@ -6,6 +6,7 @@ import { Toaster } from "react-hot-toast";
 import { Suspense } from "react"
 import "./globals.css"
 import { ClerkProvider } from "@clerk/nextjs";
+import SidebarLayout from "@/components/sidebar";
 
 export const metadata: Metadata = {
   title: "SynergySphere - Team Collaboration Platform",
@@ -22,16 +23,13 @@ export default function RootLayout({
     <html lang="en">
       <body className={`font-sans`}>
         <Toaster />
-        <ConvexClientProvider>
-          <ClerkProvider>
-
-
-          <Suspense fallback={null}>
-            {children}
-          </Suspense>
-
-          </ClerkProvider>
-        </ConvexClientProvider>
+          <ConvexClientProvider>
+            <ClerkProvider>
+                <Suspense fallback={null}>
+                  {children}
+                </Suspense>
+            </ClerkProvider>
+          </ConvexClientProvider>
       </body>
     </html>
   )
