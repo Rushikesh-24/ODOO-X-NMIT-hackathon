@@ -1,31 +1,37 @@
-"use client"
+"use client";
 
-import { useAuth } from "@/lib/auth"
-import { useRouter } from "next/navigation"
-import { useEffect } from "react"
-import { useQuery } from "convex/react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { ProjectCard } from "@/components/projects/project-card"
-import { NotificationBell } from "@/components/notifications/notification-bell"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Plus, FolderOpen, CheckSquare, MessageSquare } from "lucide-react"
-import { api } from "../../convex/_generated/api"
+import { useAuth } from "@/lib/auth";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { useQuery } from "convex/react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ProjectCard } from "@/components/projects/project-card";
+import { NotificationBell } from "@/components/notifications/notification-bell";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Plus, FolderOpen, CheckSquare, MessageSquare } from "lucide-react";
+import { api } from "../../convex/_generated/api";
 
 export default function HomePage() {
-  const { isAuthenticated, user, logout } = useAuth()
-  const router = useRouter()
-
-  const projects = useQuery(api.projects.getUserProjects, user ? { userId: user.userId } : "skip")
+  const router = useRouter();
+  const { user, logout } = useAuth();
+  const projects = useQuery(api.projects.getUserProjects, {
+    userId: user!.userId,
+  });
+  const isAuthenticated = !!user;
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      router.push("/auth")
+    if (user === null) {
+      router.push("/auth");
     }
-  }, [isAuthenticated, router])
+  }, [user, router]);
+
+  if (!user) {
+    return null; // or spinner
+  }
 
   if (!isAuthenticated) {
-    return null
+    return null;
   }
 
   return (
@@ -50,7 +56,9 @@ export default function HomePage() {
                     {user?.name?.charAt(0) || user?.userName?.charAt(0) || "?"}
                   </AvatarFallback>
                 </Avatar>
-                <span className="hidden md:inline">{user?.name || user?.userName}</span>
+                <span className="hidden md:inline">
+                  {user?.name || user?.userName}
+                </span>
               </Button>
               <Button onClick={logout} variant="outline" size="sm">
                 Logout
@@ -63,12 +71,19 @@ export default function HomePage() {
       {/* Main Content */}
       <main className="max-w-6xl mx-auto p-8">
         <div className="mb-8">
-          <h2 className="text-xl font-semibold mb-2">Welcome back, {user?.name || user?.userName}!</h2>
-          <p className="text-muted-foreground">Here&apos;s what&apos;s happening with your projects today.</p>
+          <h2 className="text-xl font-semibold mb-2">
+            Welcome back, {user?.name || user?.userName}!
+          </h2>
+          <p className="text-muted-foreground">
+            Here&apos;s what&apos;s happening with your projects today.
+          </p>
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-8">
-          <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => router.push("/projects")}>
+          <Card
+            className="cursor-pointer hover:shadow-md transition-shadow"
+            onClick={() => router.push("/projects")}
+          >
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center space-x-2 text-lg">
                 <FolderOpen className="w-5 h-5" />
@@ -118,7 +133,9 @@ export default function HomePage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">Start collaborating</p>
+              <p className="text-sm text-muted-foreground">
+                Start collaborating
+              </p>
             </CardContent>
           </Card>
         </div>
@@ -144,5 +161,5 @@ export default function HomePage() {
         )}
       </main>
     </div>
-  )
+  );
 }
