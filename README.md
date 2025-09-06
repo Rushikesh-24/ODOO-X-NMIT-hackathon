@@ -1,36 +1,55 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SynergySphere – Landing Page
 
-## Getting Started
+This project is a **modern, responsive landing page** for **StreamLine**, a platform that helps teams stay organized by providing real-time chat and AI-powered project management.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🚀 Features of SynergySphere
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+StreamLine revolutionizes project collaboration with the following key features:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. **AI-Powered Discussions**  
+   - Collaborate directly in the project’s discussion/chat section.  
+   - Our AI agents automatically extract tasks, complaints, deadlines, and detect deviations from project goals.  
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+2. **Smart Goal Tracking**  
+   - Compare conversations with predefined project goals.  
+   - Get real-time progress tracking (e.g., 50% complete).  
 
-## Learn More
+3. **Task & Complaint Extraction**  
+   - Automatically extract tasks with owner, urgency, and deadlines.  
+   - Identify member complaints and log them in structured format.  
 
-To learn more about Next.js, take a look at the following resources:
+4. **Organized Workflow**  
+   - Keeps your team aligned with the project vision.  
+   - Reduces confusion and ensures every chat contributes to project success.  
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🖥️ Sections in the Landing Page
 
-## Deploy on Vercel
+- **Header**  
+  Company logo, navigation links, and a primary call-to-action button.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- **Hero Section**  
+  Catchy headline, short description, and a sign-up call-to-action.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Features Section**  
+  Highlighting 3–4 main features (including AI-powered discussion analysis).
+
+- **Testimonials Section**  
+  Customer quotes showing real-world benefits.
+
+- **Pricing Section**  
+  Multiple plan tiers for different needs.
+
+- **Final Call-to-Action**  
+  Encouraging sign-ups with a clear value proposition.
+
+- **Footer**  
+  Important links and social media icons.
+
+---
+
+## 📂 Project Structure
+
