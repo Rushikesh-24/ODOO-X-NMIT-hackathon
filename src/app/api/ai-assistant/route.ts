@@ -14,7 +14,19 @@ export async function POST(request: NextRequest) {
 
     let response = ""
 
-    if (lowerQuery.includes("project") && (lowerQuery.includes("working") || lowerQuery.includes("assigned"))) {
+    // Define common queries with numeric options
+    const queryOptions = [
+      { id: 1, label: "What projects am I working on?", matcher: () => lowerQuery.includes("1") || (lowerQuery.includes("project") && (lowerQuery.includes("working") || lowerQuery.includes("assigned"))) },
+      { id: 2, label: "What tasks are assigned to me?", matcher: () => lowerQuery.includes("2") || (lowerQuery.includes("task") && (lowerQuery.includes("assigned") || lowerQuery.includes("my"))) },
+      { id: 3, label: "Do I have any overdue tasks?", matcher: () => lowerQuery.includes("3") || (lowerQuery.includes("overdue") || lowerQuery.includes("due")) },
+      { id: 4, label: "What's my progress status?", matcher: () => lowerQuery.includes("4") || (lowerQuery.includes("progress") || lowerQuery.includes("status")) },
+      { id: 5, label: "Show me my high priority tasks", matcher: () => lowerQuery.includes("5") || (lowerQuery.includes("high") && lowerQuery.includes("priority")) }
+    ];
+
+    // Find matching option
+    const matchedOption = queryOptions.find(option => option.matcher());
+    
+    if (matchedOption?.id === 1 || (lowerQuery.includes("project") && (lowerQuery.includes("working") || lowerQuery.includes("assigned")))) {
       // Get user's projects
       const projects = await convex.query(api.projects.getUserProjects, { userId })
       if (projects.length === 0) {
@@ -22,7 +34,7 @@ export async function POST(request: NextRequest) {
       } else {
         response = `You're currently working on ${projects.length} project${projects.length > 1 ? "s" : ""}:\n\n${projects.map((p) => `• **${p.name}** - ${p.description || "No description"}`).join("\n")}`
       }
-    } else if (lowerQuery.includes("task") && (lowerQuery.includes("assigned") || lowerQuery.includes("my"))) {
+    } else if (matchedOption?.id === 2 || (lowerQuery.includes("task") && (lowerQuery.includes("assigned") || lowerQuery.includes("my")))) {
       // Get user's tasks
       const tasks = await convex.query(api.tasks.getUserTasks, { userId })
       if (tasks.length === 0) {
@@ -45,7 +57,7 @@ export async function POST(request: NextRequest) {
             .join("\n")}`
         }
       }
-    } else if (lowerQuery.includes("overdue") || lowerQuery.includes("due")) {
+    } else if (matchedOption?.id === 3 || (lowerQuery.includes("overdue") || lowerQuery.includes("due"))) {
       // Get overdue/due soon tasks
       const tasks = await convex.query(api.tasks.getUserTasks, { userId })
       const now = new Date()
@@ -68,7 +80,7 @@ export async function POST(request: NextRequest) {
           response += `📅 ${dueSoon.length} task${dueSoon.length > 1 ? "s" : ""} due soon:\n${dueSoon.map((t) => `• ${t.title} (due ${new Date(t.dueDate!).toLocaleDateString()})`).join("\n")}`
         }
       }
-    } else if (lowerQuery.includes("progress") || lowerQuery.includes("status")) {
+    } else if (matchedOption?.id === 4 || (lowerQuery.includes("progress") || lowerQuery.includes("status"))) {
       // Get overall progress
       const projects = await convex.query(api.projects.getUserProjects, { userId })
       const tasks = await convex.query(api.tasks.getUserTasks, { userId })
@@ -81,9 +93,22 @@ export async function POST(request: NextRequest) {
       response += `• **Projects:** ${projects.length} active\n`
       response += `• **Tasks:** ${completedTasks}/${totalTasks} completed (${completionRate}%)\n`
       response += `• **Completion Rate:** ${completionRate >= 80 ? "🎉 Excellent!" : completionRate >= 60 ? "👍 Good progress!" : "💪 Keep going!"}`
+    } else if (matchedOption?.id === 5 || (lowerQuery.includes("high") && lowerQuery.includes("priority"))) {
+      // Show high priority tasks
+      const tasks = await convex.query(api.tasks.getUserTasks, { userId })
+      const highPriorityTasks = tasks.filter((t) => (t as any).priority === "High")
+      
+      if (highPriorityTasks.length === 0) {
+        response = "You don't have any high priority tasks at the moment."
+      } else {
+        response = `**Your High Priority Tasks:**\n\n${highPriorityTasks.map((t) => `• ${t.title} (${t.status})`).join("\n")}`
+      }
     } else {
-      // Default response with suggestions
-      response = `I can help you with information about your projects and tasks! Try asking me:\n\n• "What projects am I working on?"\n• "What tasks are assigned to me?"\n• "Do I have any overdue tasks?"\n• "What's my progress status?"\n• "Show me my high priority tasks"`
+      // Default response with numbered options
+      response = `I can help you with information about your projects and tasks! Choose an option by number or ask a question:\n\n`
+      queryOptions.forEach(option => {
+        response += `${option.id}. ${option.label}\n`
+      })
     }
 
     return NextResponse.json({ response })
